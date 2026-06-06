@@ -3,576 +3,398 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Montana · Dashboard Operativo Live</title>
+<title>Montana · Dashboard Operativo</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0c0e14;
-  --surface:#13161f;
-  --card:#181c27;
-  --card2:#1d2235;
-  --border:#252a3d;
-  --gold:#d4a84b;
-  --gold2:#f0c96b;
-  --ember:#e8613c;
-  --sage:#4caf89;
-  --sky:#5b9cf6;
-  --lavender:#9b7fe8;
-  --rose:#e87878;
-  --text:#eef0f6;
-  --muted:#6b7280;
-  --dim:#9ca3af;
+  --bg:#eef1f6;--surface:#ffffff;--card:#ffffff;--card2:#f4f6fa;
+  --border:#e2e7f0;--border-soft:#eaeef4;
+  --ink:#1d2433;--ink-soft:#4a5468;--muted:#8a93a6;--dim:#6b7488;
+  --gold:#686359;--gold-bright:#e0ac3f;--ember:#e8613c;
+  --sage:#1faf6b;--sage-soft:#e3f6ed;--rose:#e0495f;--rose-soft:#fde8ec;
+  --sky:#2f7de1;--sky-soft:#e6f0fd;--lavender:#7c5fd6;--amber:#e8941a;
+  --magenta:#e0277e;--teal:#159a9c;
+  --side:#12151d;--side2:#1a1f2b;--side-border:#272d3a;--side-ink:#e8ebf2;--side-muted:#7b8499;
+  --shadow:0 1px 3px rgba(20,30,60,.06),0 8px 24px -8px rgba(20,30,60,.1);
+  --shadow-hover:0 4px 12px rgba(20,30,60,.1),0 16px 40px -12px rgba(20,30,60,.18);
+  --sidebar-w:248px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;opacity:.4
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--side);border-right:1px solid var(--side-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.content{margin-left:var(--sidebar-w);flex:1;min-width:0}
+.side-brand{padding:26px 22px 20px;border-bottom:1px solid var(--side-border);text-align:center}
+.side-logo{width:100%;max-width:170px;height:auto;object-fit:contain;margin:0 auto;display:block}
+.side-logo-fallback{width:64px;height:64px;border-radius:16px;margin:0 auto 10px;background:linear-gradient(135deg,var(--gold),var(--ember));display:flex;align-items:center;justify-content:center;font-size:32px}
+.side-brand-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;margin-top:10px}
+.side-brand-sub{font-size:9px;color:var(--side-muted);letter-spacing:3px;text-transform:uppercase;margin-top:4px}
+.side-section{padding:18px 16px;border-bottom:1px solid var(--side-border)}
+.side-section-title{font-size:10px;font-weight:700;color:var(--side-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding:0 6px}
+.side-nav{display:flex;flex-direction:column;gap:3px}
+.nav-btn{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--side-muted);background:transparent;transition:color .2s,background .2s;text-align:left;width:100%}
+.nav-btn:hover{color:var(--side-ink);background:var(--side2)}
+.nav-btn.active{color:#fff;background:linear-gradient(135deg,var(--gold),var(--ember));box-shadow:0 4px 14px -4px rgba(199,147,48,.6)}
+.nav-btn .ic{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.side-filter-label{font-size:10px;font-weight:700;color:var(--side-muted);text-transform:uppercase;letter-spacing:1px;margin:0 6px 8px}
+.side-mes-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.side-pill{padding:6px 13px;border-radius:18px;border:1px solid var(--side-border);background:transparent;color:var(--side-muted);cursor:pointer;font-size:11.5px;font-weight:600;transition:all .2s}
+.side-pill:hover{border-color:var(--gold);color:var(--gold-bright)}
+.side-pill.active{background:linear-gradient(135deg,var(--gold),var(--ember));border-color:transparent;color:#fff}
+.side-date{width:100%;background:var(--side2);border:1px solid var(--side-border);border-radius:9px;padding:8px 11px;font-family:'DM Mono',monospace;font-size:12px;color:var(--side-ink);outline:none;margin-bottom:8px;transition:border-color .2s}
+.side-date:focus{border-color:var(--gold)}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Montana · Dashboard Operativo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f6;--surface:#ffffff;--card:#ffffff;--card2:#f4f6fa;
+  --border:#e2e7f0;--border-soft:#eaeef4;
+  --ink:#1d2433;--ink-soft:#4a5468;--muted:#8a93a6;--dim:#6b7488;
+  --gold:#686359;--gold-bright:#e0ac3f;--ember:#e8613c;
+  --sage:#1faf6b;--sage-soft:#e3f6ed;--rose:#e0495f;--rose-soft:#fde8ec;
+  --sky:#2f7de1;--sky-soft:#e6f0fd;--lavender:#7c5fd6;--amber:#e8941a;
+  --magenta:#e0277e;--teal:#159a9c;
+  --side:#12151d;--side2:#1a1f2b;--side-border:#272d3a;--side-ink:#e8ebf2;--side-muted:#7b8499;
+  --shadow:0 1px 3px rgba(20,30,60,.06),0 8px 24px -8px rgba(20,30,60,.1);
+  --shadow-hover:0 4px 12px rgba(20,30,60,.1),0 16px 40px -12px rgba(20,30,60,.18);
+  --sidebar-w:248px;
 }
-#loading-overlay {
-  position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.4s ease;
-}
-.spinner {
-  width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--gold);
-  border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:24px 40px;border-bottom:1px solid var(--border);
-  background:linear-gradient(180deg,rgba(20,24,36,.98) 0%,rgba(19,22,31,.95) 100%);
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
-}
-.logo{display:flex;align-items:center;gap:14px}
-.logo-icon{
-  width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--ember));
-  border-radius:12px;display:flex;align-items:center;justify-content:center;
-  font-size:22px;box-shadow:0 4px 20px rgba(212,168,75,.25)
-}
-.logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;
-  background:linear-gradient(90deg,var(--gold2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
-.header-nav{display:flex;gap:4px}
-.nav-btn{
-  padding:8px 18px;border-radius:8px;border:none;cursor:pointer;
-  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all .2s;
-  background:transparent;color:var(--muted)
-}
-.nav-btn:hover{background:var(--card2);color:var(--text)}
-.nav-btn.active{background:linear-gradient(135deg,rgba(212,168,75,.2),rgba(232,97,60,.15));
-  color:var(--gold);border:1px solid rgba(212,168,75,.3)}
-.header-right{display:flex;align-items:center;gap:16px}
-.date-badge{
-  font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);
-  background:var(--card);padding:6px 14px;border-radius:8px;border:1px solid var(--border)
-}
-.main{padding:32px 40px;position:relative;z-index:1}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--side);border-right:1px solid var(--side-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.content{margin-left:var(--sidebar-w);flex:1;min-width:0}
+.side-brand{padding:26px 22px 20px;border-bottom:1px solid var(--side-border);text-align:center}
+.side-logo{width:100%;max-width:170px;height:auto;object-fit:contain;margin:0 auto;display:block}
+.side-logo-fallback{width:64px;height:64px;border-radius:16px;margin:0 auto 10px;background:linear-gradient(135deg,var(--gold),var(--ember));display:flex;align-items:center;justify-content:center;font-size:32px}
+.side-brand-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;margin-top:10px}
+.side-brand-sub{font-size:9px;color:var(--side-muted);letter-spacing:3px;text-transform:uppercase;margin-top:4px}
+.side-section{padding:18px 16px;border-bottom:1px solid var(--side-border)}
+.side-section-title{font-size:10px;font-weight:700;color:var(--side-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding:0 6px}
+.side-nav{display:flex;flex-direction:column;gap:3px}
+.nav-btn{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--side-muted);background:transparent;transition:color .2s,background .2s;text-align:left;width:100%}
+.nav-btn:hover{color:var(--side-ink);background:var(--side2)}
+.nav-btn.active{color:#fff;background:linear-gradient(135deg,var(--gold),var(--ember));box-shadow:0 4px 14px -4px rgba(199,147,48,.6)}
+.nav-btn .ic{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.side-filter-label{font-size:10px;font-weight:700;color:var(--side-muted);text-transform:uppercase;letter-spacing:1px;margin:0 6px 8px}
+.side-mes-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.side-pill{padding:6px 13px;border-radius:18px;border:1px solid var(--side-border);background:transparent;color:var(--side-muted);cursor:pointer;font-size:11.5px;font-weight:600;transition:all .2s}
+.side-pill:hover{border-color:var(--gold);color:var(--gold-bright)}
+.side-pill.active{background:linear-gradient(135deg,var(--gold),var(--ember));border-color:transparent;color:#fff}
+.side-date{width:100%;background:var(--side2);border:1px solid var(--side-border);border-radius:9px;padding:8px 11px;font-family:'DM Mono',monospace;font-size:12px;color:var(--side-ink);outline:none;margin-bottom:8px;transition:border-color .2s}
+.side-date:focus{border-color:var(--gold)}
+.side-date::-webkit-calendar-picker-indicator{filter:invert(.7)}
+.side-btn{width:100%;border:none;border-radius:9px;padding:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:6px}
+.side-btn-gold{background:linear-gradient(135deg,var(--gold),var(--ember));color:#fff}
+.side-btn-gold:hover{opacity:.9}
+.side-btn-ghost{background:var(--side2);border:1px solid var(--side-border);color:var(--side-muted)}
+.side-btn-ghost:hover{border-color:var(--gold);color:var(--gold-bright)}
+.side-foot{margin-top:auto;padding:16px;border-top:1px solid var(--side-border);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--side-muted)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--side-muted);flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:var(--sage)}.sync-dot.loading{background:var(--gold);animation:pulse .8s infinite alternate}.sync-dot.error{background:var(--rose)}
+@keyframes pulse{from{opacity:.35}to{opacity:1}}
+.side-sync-btn{margin-left:auto;background:var(--side2);border:1px solid var(--side-border);color:var(--side-muted);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600}
+.side-sync-btn:hover{border-color:var(--gold);color:var(--gold-bright)}
+.content-head{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.content-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.content-clock{font-family:'DM Mono',monospace;font-size:12px;color:var(--dim);background:var(--card2);padding:7px 13px;border-radius:10px;border:1px solid var(--border)}
+.main{padding:24px 28px 60px;max-width:1380px}
+#loadingOverlay{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(238,241,246,.95);backdrop-filter:blur(8px)}
+#loadingOverlay.hidden{display:none}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--muted);letter-spacing:1px}
+#toast{position:fixed;bottom:26px;right:26px;z-index:998;padding:13px 20px;border-radius:13px;font-size:13px;font-weight:600;border:1px solid transparent;box-shadow:var(--shadow);transition:all .35s cubic-bezier(.34,1.56,.64,1);opacity:0;transform:translateY(12px) scale(.96);pointer-events:none}
+#toast.show{opacity:1;transform:translateY(0) scale(1)}
+#toast.success{background:var(--sage-soft);border-color:var(--sage);color:var(--sage)}
+#toast.error{background:var(--rose-soft);border-color:var(--rose);color:var(--rose)}
+#toast.info{background:var(--sky-soft);border-color:var(--sky);color:var(--sky)}
 .view{display:none}
-.view.active{display:block}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-.kpi{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:20px 22px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s
-}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold))}
-.kpi-icon{font-size:20px;margin-bottom:10px;display:block}
-.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
-.kpi-value{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text)}
-.kpi-value.lg{font-size:30px}
-.kpi-sub{font-size:11px;color:var(--dim);margin-top:6px}
-.section-title{
-  font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;
-  letter-spacing:2px;margin-bottom:16px;display:flex;align-items:center;gap:8px
-}
+.view.active{display:block;animation:fadeIn .4s cubic-bezier(.22,.61,.36,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px}
+.section-title{font-size:12px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1.5px;margin:8px 0 14px;display:flex;align-items:center;gap:10px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px}
-.chart-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
-.chart-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.kpi{position:relative;overflow:hidden;border-radius:16px;padding:18px 20px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s}
+.kpi::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--accent,var(--gold))}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.kpi-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;font-size:17px;margin-bottom:12px;background:var(--card2)}
+.kpi-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.kpi-value{font-family:'Playfair Display',serif;font-size:27px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px}
+.kpi-value.lg{font-size:32px}
+.kpi-sub{font-size:11px;color:var(--dim);margin-top:8px;display:flex;align-items:center;gap:5px}
+.kpi-meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.kpi-meta-label{font-size:10px;color:var(--muted)}
+.kpi-pct{font-family:'DM Mono',monospace;font-size:11px;font-weight:700}
+.kpi-bar{height:6px;background:var(--card2);border-radius:3px;margin-top:6px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.resumen-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:22px;flex-wrap:wrap}
+.trimestre-wrap{display:flex;flex-direction:column;gap:12px}
+.trimestre-bars{display:flex;gap:10px;align-items:flex-end}
+.tri-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:5px}
+.tri-bar-bg{width:52px;height:62px;background:var(--card2);border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--border-soft);display:flex;align-items:flex-end}
+.tri-bar-fill{width:100%;border-radius:7px 7px 0 0;transition:height 1s cubic-bezier(.34,1.56,.64,1);min-height:4px}
+.tri-bar-label{font-size:10px;color:var(--muted);letter-spacing:.5px;font-weight:700}
+.tri-bar-val{font-size:10px;color:var(--dim);font-family:'DM Mono',monospace}
+.chart-card{position:relative;border-radius:16px;padding:22px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow);transition:box-shadow .25s}
+.chart-card:hover{box-shadow:var(--shadow-hover)}
+.chart-title{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.chart-sub{font-size:11.5px;color:var(--muted);margin-bottom:18px}
 .chart-wrap{position:relative;width:100%}
-.semaforo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.semaforo-item{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  padding:16px 18px;display:flex;align-items:center;gap:14px
-}
-.semaforo-dot{width:14px;height:14px;border-radius:50%}
-.semaforo-dot.green{background:var(--sage);box-shadow:0 0 10px rgba(76,175,137,.6)}
-.semaforo-dot.yellow{background:#f0b429;box-shadow:0 0 10px rgba(240,180,41,.6)}
-.semaforo-dot.red{background:var(--rose);box-shadow:0 0 10px rgba(232,120,120,.6)}
-.tabla-wrap{overflow:hidden;border-radius:12px;border:1px solid var(--border);background:var(--card)}
+.donut-legend{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.legend-item{display:flex;align-items:center;gap:9px;font-size:12px}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend-name{color:var(--dim);flex:1}
+.legend-val{font-family:'DM Mono',monospace;color:var(--ink-soft);font-size:11px;font-weight:500}
+.canales-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}
+.canal-card{position:relative;overflow:hidden;border-radius:14px;padding:15px 17px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.canal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.canal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold))}
+.canal-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-weight:700}
+.canal-value{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink)}
+.canal-sub{font-size:10px;color:var(--dim);margin-top:4px}
+.canal-badge{display:inline-block;font-size:9px;padding:2px 8px;border-radius:11px;margin-top:5px;font-weight:700;background:rgba(232,148,26,.15);color:var(--amber)}
+.semaforo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:13px}
+.semaforo-item{border-radius:14px;padding:15px 17px;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow);transition:transform .2s}
+.semaforo-item:hover{transform:translateX(3px)}
+.semaforo-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.semaforo-dot.green{background:var(--sage)}.semaforo-dot.yellow{background:var(--amber)}.semaforo-dot.red{background:var(--rose)}.semaforo-dot.gray{background:var(--muted)}
+.semaforo-info{flex:1;min-width:0}
+.semaforo-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.semaforo-vals{font-size:11px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.semaforo-pct{font-family:'DM Mono',monospace;font-size:14px;font-weight:700}
+.progress-wrap{margin-top:11px}
+.progress-bar{height:7px;background:var(--card2);border-radius:4px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.tabla-wrap{overflow:hidden;border-radius:14px;border:1px solid var(--border-soft);background:var(--surface);box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse}
-th{background:var(--card2);padding:12px 16px;font-size:11px;color:var(--muted);text-transform:uppercase;text-align:left}
-td{padding:12px 16px;font-size:13px;border-top:1px solid rgba(255,255,255,.04)}
-.entry-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px}
-.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.form-group{display:flex;flex-direction:column;gap:8px}
-.form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
-.form-input{
-  background:var(--card2);border:1px solid var(--border);border-radius:10px;
-  padding:12px 14px;font-family:'DM Mono',monospace;font-size:14px;color:var(--text);outline:none
-}
-.form-input:focus{border-color:var(--gold)}
-.btn-primary{
-  background:linear-gradient(135deg,var(--gold),var(--ember));
-  border:none;border-radius:10px;padding:14px 28px;
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#0c0e14;
-  cursor:pointer;transition:all .2s;margin-top:16px;width:100%
-}
-.btn-primary:disabled{background:var(--muted);cursor:not-allowed;opacity:0.6}
-.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px}
-.progress-fill{height:100%;border-radius:3px;width:0%}
+th{background:var(--card2);padding:12px 16px;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:12px 16px;font-size:13px;border-top:1px solid var(--border-soft);color:var(--ink-soft)}
+tbody tr{transition:background .15s}
+tbody tr:hover td{background:var(--card2)}
+.badge{display:inline-flex;align-items:center;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-1{background:rgba(232,97,60,.13);color:#c5512f}.badge-2{background:rgba(47,125,225,.13);color:#2566bd}.badge-3{background:rgba(31,175,107,.13);color:#178a55}.badge-4{background:rgba(232,148,26,.15);color:#bd7714}.badge-5{background:rgba(124,95,214,.13);color:#6048b5}.badge-6{background:rgba(232,148,26,.15);color:#bd7714}.badge-7{background:rgba(224,73,95,.13);color:#c23a4f}.badge-8{background:rgba(138,147,166,.15);color:#6b7488}
+.filter-bar{display:flex;align-items:center;gap:12px;padding:15px 18px;border-radius:14px;margin-bottom:18px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow);flex-wrap:wrap}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.input{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,147,48,.15)}
+.input.date{width:155px}
+.btn{border:none;border-radius:10px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--ember));color:#fff;box-shadow:0 4px 14px -4px rgba(199,147,48,.5)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--dim)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.filter-totals{margin-left:auto;display:flex;gap:20px;font-size:12px;font-family:'DM Mono',monospace}
+.filter-totals span{color:var(--muted)}
+.filter-totals strong{color:var(--ink)}
+.week-selector{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.week-btn{padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:600;transition:all .2s}
+.week-btn:hover{border-color:var(--gold);color:var(--gold)}
+.week-btn.active{background:linear-gradient(135deg,var(--gold),var(--ember));border-color:transparent;color:#fff}
+.cierre-date-nav{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.cierre-arrow{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px 16px;cursor:pointer;font-size:18px;color:var(--dim);transition:all .2s;line-height:1}
+.cierre-arrow:hover{border-color:var(--gold);color:var(--gold)}
+.cierre-dia-label{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink)}
+.cierre-encargado{font-size:12px;color:var(--muted);background:var(--card2);padding:4px 12px;border-radius:9px;border:1px solid var(--border-soft);display:inline-block;margin-top:5px}
+.no-data-banner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--card2);border:1px dashed var(--border);border-radius:15px;padding:40px;margin:16px 0;color:var(--muted);font-size:14px;text-align:center}
+.cierre-section{border-radius:16px;padding:20px 22px;margin-bottom:16px;background:var(--card);border:1px solid var(--border-soft);box-shadow:var(--shadow)}
+.cierre-section-title{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.cierre-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px}
+.stat-box{position:relative;overflow:hidden;border-radius:12px;padding:14px 16px;background:var(--card2);border:1px solid var(--border-soft);transition:transform .2s}
+.stat-box:hover{transform:translateY(-2px)}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold))}
+.stat-box-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-weight:700}
+.stat-box-value{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--ink);line-height:1}
+.stat-box-sub{font-size:10px;color:var(--dim);margin-top:5px}
+.pago-bar-wrap{display:flex;flex-direction:column;gap:10px}
+.pago-bar-item{display:flex;align-items:center;gap:11px}
+.pago-bar-label{font-size:12px;color:var(--dim);width:140px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pago-bar-track{flex:1;height:9px;background:var(--card2);border-radius:5px;overflow:hidden}
+.pago-bar-fill{height:100%;border-radius:5px;transition:width .9s cubic-bezier(.34,1.56,.64,1)}
+.pago-bar-val{font-family:'DM Mono',monospace;color:var(--ink);font-weight:600;flex-shrink:0}
+.pago-bar-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:38px;text-align:right;flex-shrink:0}
+.gastos-dia-list{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto;padding-right:4px}
+.gasto-item{display:flex;align-items:center;gap:11px;padding:9px 13px;background:var(--card2);border-radius:10px;font-size:12px;border:1px solid var(--border-soft)}
+.gasto-item-tipo{flex-shrink:0;font-size:15px}
+.gasto-item-desc{flex:1;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gasto-item-val{font-family:'DM Mono',monospace;color:var(--ink);font-weight:600;flex-shrink:0}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.info-banner{display:flex;align-items:center;gap:14px;background:var(--sky-soft);border:1px solid rgba(47,125,225,.25);border-radius:14px;padding:15px 18px;margin-bottom:22px}
 .mono{font-family:'DM Mono',monospace}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#cfd6e2;border-radius:4px}
+.sidebar::-webkit-scrollbar-thumb{background:#2a3140}
+@media(max-width:980px){
+  .layout{flex-direction:column}
+  .sidebar{position:static;width:100%;flex-direction:column}
+  .content{margin-left:0}
+  .side-brand{padding:16px;display:flex;align-items:center;gap:12px;text-align:left}
+  .side-logo{max-width:120px;margin:0}
+  .side-logo-fallback{width:44px;height:44px;font-size:22px;margin:0}
+  .side-brand-name{margin-top:0;font-size:17px}
+  .side-nav{flex-direction:row;overflow-x:auto;gap:6px}
+  .nav-btn{white-space:nowrap;padding:9px 14px}
+  .nav-btn .ic{display:none}
+  .side-section{padding:12px 16px}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .canales-grid{grid-template-columns:repeat(3,1fr)}
+  .grid-2-1,.grid-2{grid-template-columns:1fr}
+}
+@media(max-width:560px){.grid-4,.grid-3{grid-template-columns:1fr 1fr}.canales-grid{grid-template-columns:repeat(3,1fr)}.main{padding:18px 14px 50px}.content-head{padding:14px 16px}.kpi-value{font-size:22px}}
+@media(max-width:420px){.grid-4,.grid-3,.canales-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<div id="loading-overlay">
-  <div class="spinner"></div>
-  <h3 style="font-family:'Playfair Display',serif; color:var(--gold)">Conectando Base de Datos...</h3>
-  <p style="color:var(--muted); font-size:12px; margin-top:6px;">Sincronizando información en tiempo real</p>
-</div>
- 
-<header class="header">
-  <div class="logo">
-    <div class="logo-icon">🍖</div>
-    <div>
-      <div class="logo-text">Montana</div>
-      <div class="logo-sub">Dashboard Operativo Live</div>
+<div id="loadingOverlay"><div class="spinner"></div><div class="loading-text" id="loadingText">Conectando con Google Sheets…</div></div>
+<div id="toast"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <img src="logo.png" alt="Montana" class="side-logo" onerror="this.style.display='none';document.getElementById('sideFallback').style.display='flex'">
+      <div class="side-logo-fallback" id="sideFallback" style="display:none">🐂</div>
+      <div class="side-brand-txt"><div class="side-brand-name"></div></div>
     </div>
-  </div>
-  <nav class="header-nav">
-    <button class="nav-btn active" onclick="switchView('resumen')">Resumen</button>
-    <button class="nav-btn" onclick="switchView('ventas')">Ventas</button>
-    <button class="nav-btn" onclick="switchView('gastos')">Gastos</button>
-    <button class="nav-btn" onclick="switchView('semaforo')">Semáforo KPIs</button>
-    <button class="nav-btn" onclick="switchView('registro')">Registro Diario</button>
-  </nav>
-  <div class="header-right">
-    <div class="date-badge" id="liveClock">Cargando...</div>
-  </div>
-</header>
- 
-<main class="main">
- 
-<div class="view active" id="view-resumen">
-  <div class="section-title">Resumen Ejecutivo General</div>
-  <div class="grid-4">
-    <div class="kpi" style="--accent:var(--gold)">
-      <span class="kpi-icon">💰</span><div class="kpi-label">Venta Bruta</div>
-      <div class="kpi-value lg" id="kpi-vb">$0</div>
-      <div class="kpi-sub" id="sub-vb">0 días en base</div>
+    <div class="side-section">
+      <div class="side-section-title">Navegación</div>
+      <nav class="side-nav">
+        <button class="nav-btn active" onclick="switchView('resumen')"><span class="ic">📊</span>Resumen</button>
+        <button class="nav-btn" onclick="switchView('ventas')"><span class="ic">💰</span>Ventas</button>
+        <button class="nav-btn" onclick="switchView('gastos')"><span class="ic">🧾</span>Gastos</button>
+        <button class="nav-btn" onclick="switchView('semaforo')"><span class="ic">🚦</span>Semáforo</button>
+        <button class="nav-btn" onclick="switchView('historial')"><span class="ic">📋</span>Historial</button>
+        <button class="nav-btn" onclick="switchView('cierre')"><span class="ic">📅</span>Cierre Diario</button>
+      </nav>
     </div>
-    <div class="kpi" style="--accent:var(--sage)">
-      <span class="kpi-icon">📊</span><div class="kpi-label">Venta Neta</div>
-      <div class="kpi-value lg" id="kpi-vn">$0</div>
-      <div class="kpi-sub">Neto real sin impuestos ni propinas</div>
+    <div class="side-section">
+      <div class="side-section-title">Filtros</div>
+      <div class="side-filter-label">Mes de análisis</div>
+      <div class="side-mes-pills" id="mesPills"></div>
+      <div class="side-filter-label" style="margin-top:14px">Rango de fechas (Historial)</div>
+      <input type="date" class="side-date" id="filtroDesde">
+      <input type="date" class="side-date" id="filtroHasta">
+      <button class="side-btn side-btn-gold" onclick="aplicarFiltroHistorial();switchView('historial')">Aplicar filtro</button>
+      <button class="side-btn side-btn-ghost" onclick="limpiarFiltro()">Limpiar</button>
     </div>
-    <div class="kpi" style="--accent:var(--sky)">
-      <span class="kpi-icon">🍽</span><div class="kpi-label">Propinas</div>
-      <div class="kpi-value" id="kpi-prop">$0</div>
-      <div class="kpi-sub" id="sub-prop">0%</div>
+    <div class="side-foot">
+      <span class="sync-dot" id="syncDot"></span><span id="syncLabel">Sincronizar</span>
+      <button class="side-sync-btn" onclick="fetchAllData(true)">↻ Actualizar</button>
     </div>
-    <div class="kpi" style="--accent:var(--ember)">
-      <span class="kpi-icon">🧾</span><div class="kpi-label">Ipoconsumo (8%)</div>
-      <div class="kpi-value" id="kpi-ipo">$0</div>
-      <div class="kpi-sub" id="sub-ipo">Calculado de la base</div>
+  </aside>
+
+  <div class="content">
+    <div class="content-head">
+      <div class="content-title" id="contentTitle">Resumen</div>
+      <div class="content-clock" id="liveClock">—</div>
     </div>
-  </div>
- 
-  <div class="grid-4">
-    <div class="kpi" style="--accent:var(--lavender)">
-      <span class="kpi-icon">👥</span><div class="kpi-label">Clientes Totales</div>
-      <div class="kpi-value" id="kpi-cli">0</div>
-      <div class="kpi-sub" id="sub-cli">Promedio: 0 / día</div>
-    </div>
-    <div class="kpi" style="--accent:var(--sky)">
-      <span class="kpi-icon">🎟</span><div class="kpi-label">Ticket Promedio</div>
-      <div class="kpi-value" id="kpi-ticket">$0</div>
-      <div class="kpi-sub">Meta estipulada: $85,000</div>
-    </div>
-    <div class="kpi" style="--accent:var(--gold)">
-      <span class="kpi-icon">🍱</span><div class="kpi-label">Almuerzos Local</div>
-      <div class="kpi-value" id="kpi-alml">0</div>
-      <div class="kpi-sub" id="sub-almuerzos">0 tot.</div>
-    </div>
-    <div class="kpi" style="--accent:var(--rose)">
-      <span class="kpi-icon">📉</span><div class="kpi-label">Total Gastos</div>
-      <div class="kpi-value" id="kpi-gastos">$0</div>
-      <div class="kpi-sub" id="sub-gastos">0%</div>
-    </div>
-  </div>
- 
-  <div class="grid-2">
-    <div class="chart-card">
-      <div class="chart-title">Evolución Histórica de Ventas</div>
-      <div class="chart-sub">Venta neta por día registrado</div>
-      <div class="chart-wrap" style="height:260px"><canvas id="chartDiario"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Distribución General de Ingresos</div>
-      <div class="chart-wrap" style="height:200px; max-width:240px; margin:0 auto"><canvas id="chartDonutVentas"></canvas></div>
-    </div>
-  </div>
-</div>
- 
-<div class="view" id="view-ventas">
-  <div class="section-title">Análisis de Ingresos y Comensales</div>
-  <div class="grid-2">
-    <div class="chart-card">
-      <div class="chart-title">Clientes Atendidos Diarios</div>
-      <div class="chart-wrap" style="height:240px"><canvas id="chartClientes"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Historial de Almuerzos Ejecutivos</div>
-      <div class="chart-sub">Local vs Domicilios</div>
-      <div class="chart-wrap" style="height:240px"><canvas id="chartAlmuerzos"></canvas></div>
-    </div>
-  </div>
-</div>
- 
-<div class="view" id="view-gastos">
-  <div class="section-title">Estructura y Gestión de Costos</div>
-  <div class="grid-2">
-    <div class="chart-card">
-      <div class="chart-title">Gastos por Categoría</div>
-      <div class="chart-wrap" style="height:240px"><canvas id="chartGastosBar"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="tabla-wrap" style="height:288px; overflow-y:auto;">
-        <table>
-          <thead>
-            <tr><th>Fecha</th><th>Categoría</th><th>Concepto</th><th style="text-align:right">Valor</th></tr>
-          </thead>
-          <tbody id="tablaGastos"></tbody>
-        </table>
+    <main class="main">
+
+    <div class="view active" id="view-resumen">
+      <div class="resumen-header"><div class="trimestre-wrap"><span class="section-title" style="margin:0">Historial trimestre</span><div id="trimestreBar"></div></div></div>
+      <div class="section-title">Ventas del mes</div>
+      <div class="grid-4" id="kpiVentasRow1"></div>
+      <div class="grid-4" id="kpiVentasRow2"></div>
+      <div class="section-title">Gastos &amp; canales de venta</div>
+      <div id="kpiGastosCanales"></div>
+      <div class="section-title">Medios de pago — mes seleccionado</div>
+      <div class="grid-4" id="kpiPagos" style="margin-bottom:24px"></div>
+      <div class="section-title">Análisis gráfico</div>
+      <div class="grid-2" style="margin-bottom:18px">
+        <div class="chart-card"><div class="chart-title">Venta Neta por día</div><div class="chart-sub">Verde ≥ meta · Ámbar 80–99% · Rojo &lt;80%</div><div class="chart-wrap" style="height:250px"><canvas id="chartDiario"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Composición de ventas por canal</div><div class="chart-sub">Canales activos del mes</div><div class="chart-wrap" style="height:210px;max-width:250px;margin:0 auto"><canvas id="chartDonutVentas"></canvas></div><div class="donut-legend" style="margin-top:14px" id="legendDonutVentas"></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card"><div class="chart-title">Rendimiento por día de semana</div><div class="chart-sub">Venta neta promedio</div><div class="chart-wrap" style="height:210px"><canvas id="chartDow"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Gastos por categoría</div><div class="chart-sub" id="chartGastosDonutSub">—</div><div class="chart-wrap" style="height:170px;max-width:190px;margin:0 auto"><canvas id="chartDonutGastos"></canvas></div><div class="donut-legend" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px" id="legendDonutGastos"></div></div>
       </div>
     </div>
-  </div>
-</div>
- 
-<div class="view" id="view-semaforo">
-  <div class="section-title">Monitoreo de Objetivos Financieros (KPIs)</div>
-  <div class="grid-3">
-    <div class="kpi">
-      <div class="kpi-label">Meta Costo Cocina</div>
-      <div class="kpi-value" id="pct-cocina">0%</div>
-      <div class="progress-bar"><div class="progress-fill" id="bar-cocina" style="background:var(--ember)"></div></div>
-      <div class="kpi-sub">Meta: ≤35%</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Costo de Nómina</div>
-      <div class="kpi-value" id="pct-nomina">0%</div>
-      <div class="progress-bar"><div class="progress-fill" id="bar-nomina" style="background:var(--lavender)"></div></div>
-      <div class="kpi-sub">Meta: ≤30%</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Ticket Promedio Actual</div>
-      <div class="kpi-value" id="lbl-ticket-sf">$0</div>
-      <div class="progress-bar"><div class="progress-fill" id="bar-ticket" style="background:var(--gold)"></div></div>
-      <div class="kpi-sub">Meta: $85,000</div>
-    </div>
-  </div>
-  <div class="section-title" style="margin-top:32px">Desempeño Diario Individual</div>
-  <div class="semaforo-grid" id="semaforoDiarioContainer"></div>
-</div>
- 
-<div class="view" id="view-registro">
-  <div class="section-title">Formulario de Cierre de Caja</div>
-  <div class="entry-form">
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Fecha Operativa</label>
-        <input type="date" class="form-input" id="inp-fecha" onchange="calcularCamposAutomaticos()">
+
+    <div class="view" id="view-ventas">
+      <div class="week-selector" id="weekBtnsVentas"><button class="week-btn active" onclick="setWeekFilter(-1,this,'ventas')">Mes</button></div>
+      <div class="grid-4" id="ventasKpis"></div>
+      <div class="grid-2-1">
+        <div class="chart-card"><div class="chart-title">Venta Neta · Propinas · Ipoconsumo por día</div><div class="chart-sub">Descomposición diaria</div><div class="chart-wrap" style="height:270px"><canvas id="chartVentasStack"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Clientes por día</div><div class="chart-sub">Flujo de comensales (PAX)</div><div class="chart-wrap" style="height:270px"><canvas id="chartClientes"></canvas></div></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Encargado de Caja</label>
-        <select class="form-input" id="inp-encargado">
-          <option value="Julian">Julian</option>
-          <option value="Ami">Ami</option>
-          <option value="William">William</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Día Detectado</label>
-        <input type="text" class="form-input" id="inp-dia" readonly placeholder="Automático">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Venta Bruta POS ($)</label>
-        <input type="number" class="form-input" id="inp-vb" placeholder="Ej: 2500000" oninput="calcularCamposAutomaticos()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Propinas Recaudadas ($)</label>
-        <input type="number" class="form-input" id="inp-prop" placeholder="Ej: 200000" oninput="calcularCamposAutomaticos()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Ipoconsumo Calculado (8%)</label>
-        <input type="text" class="form-input" id="inp-ipo" readonly placeholder="$0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Número de Clientes</label>
-        <input type="number" class="form-input" id="inp-cli" placeholder="Total comensales">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Almuerzos en Local</label>
-        <input type="number" class="form-input" id="inp-alml" placeholder="Cantidad">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Almuerzos Domicilio</label>
-        <input type="number" class="form-input" id="inp-almd" placeholder="Cantidad">
+      <div class="grid-2">
+        <div class="chart-card"><div class="chart-title">Ticket promedio por día</div><div class="chart-sub">Ticket carta reportado</div><div class="chart-wrap" style="height:210px"><canvas id="chartTicket"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Almuerzos ejecutivos</div><div class="chart-sub">Local vs Domicilio</div><div class="chart-wrap" style="height:210px"><canvas id="chartAlmuerzos"></canvas></div></div>
       </div>
     </div>
-    <button class="btn-primary" id="btn-registrar" onclick="enviarCierreAGoogleSheets()">Subir Cierre a Google Sheets →</button>
-  </div>
- 
-  <div class="section-title" style="margin-top:32px">Historial de Transacciones Recientes (Últimos 15 días)</div>
-  <div class="tabla-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th><th>Día</th><th>Cajero</th><th>Venta Bruta</th><th>Propinas</th><th>Ipo</th><th>Venta Neta</th><th>Clientes</th><th>Estado KPI</th>
-        </tr>
-      </thead>
-      <tbody id="tablaHistorial"></tbody>
-    </table>
+
+    <div class="view" id="view-gastos">
+      <div class="week-selector" id="weekBtnsGastos"><button class="week-btn active" onclick="setWeekFilter(-1,this,'gastos')">Mes</button></div>
+      <div class="grid-4" id="gastosKpis"></div>
+      <div class="grid-2-1">
+        <div class="chart-card"><div class="chart-title">Gastos por categoría</div><div class="chart-sub">Distribución del gasto</div><div class="chart-wrap" style="height:250px"><canvas id="chartGastosBar"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Proporción (%)</div><div class="chart-sub">Del total de egresos</div><div class="chart-wrap" style="height:210px;max-width:210px;margin:0 auto"><canvas id="chartGastosPie"></canvas></div></div>
+      </div>
+      <div class="section-title">Detalle de gastos</div>
+      <div class="tabla-wrap"><table><thead><tr><th>Fecha</th><th>Categoría</th><th>Proveedor</th><th>Producto</th><th style="text-align:right">Valor</th></tr></thead><tbody id="tablaGastos"></tbody></table></div>
+    </div>
+
+    <div class="view" id="view-semaforo">
+      <div class="section-title">Semáforo de KPIs — mes seleccionado</div>
+      <div class="grid-3" style="margin-bottom:28px" id="sfMensualGrid"></div>
+      <div class="section-title">Semáforo diario · últimos 7 días</div>
+      <div class="semaforo-grid" id="semaforoDiario"></div>
+      <div class="divider"></div>
+      <div class="section-title">% Costos sobre venta neta</div>
+      <div class="grid-3" id="sfCostosGrid"></div>
+    </div>
+
+    <div class="view" id="view-historial">
+      <div class="info-banner"><span style="font-size:22px">📋</span><div><div style="font-size:13px;font-weight:700;color:var(--sky)">Vista de solo lectura</div><div style="font-size:12px;color:var(--muted);margin-top:2px">El ingreso de datos se realiza desde el <strong style="color:var(--ink-soft)">Formulario de Google Sheets</strong>. Usa los filtros del panel izquierdo o los de aquí.</div></div></div>
+      <div class="grid-4" id="historialKpis"></div>
+      <div class="filter-bar">
+        <span class="field-label">Desde</span><input type="date" class="input date" id="filtroDesde2">
+        <span class="field-label">Hasta</span><input type="date" class="input date" id="filtroHasta2">
+        <button class="btn btn-ghost" onclick="aplicarFiltroHistorial2()">Filtrar</button>
+        <button class="btn btn-ghost" onclick="limpiarFiltro()">Limpiar</button>
+        <button class="btn btn-gold" onclick="exportarCSV()">⬇ Exportar CSV</button>
+        <div class="filter-totals"><span>Días <strong id="ftDias">—</strong></span><span>VN Total <strong id="ftVN">—</strong></span><span>Clientes <strong id="ftCli">—</strong></span></div>
+      </div>
+      <div class="tabla-wrap"><table><thead><tr><th>Fecha</th><th>Día</th><th>Encargado</th><th style="text-align:right">V. Bruta</th><th style="text-align:right">Propinas</th><th style="text-align:right">Ipo</th><th style="text-align:right">V. Neta</th><th style="text-align:right">PAX</th><th style="text-align:right">Ticket</th><th style="text-align:center">KPI</th></tr></thead><tbody id="tablaHistorial"></tbody></table></div>
+    </div>
+
+    <div class="view" id="view-cierre">
+      <div class="cierre-date-nav">
+        <button class="cierre-arrow" onclick="cierreNavDate(-1)">‹</button>
+        <input type="date" class="input date" id="cierreFecha" onchange="renderCierre()">
+        <button class="cierre-arrow" onclick="cierreNavDate(1)">›</button>
+        <div><div class="cierre-dia-label" id="cierreDiaLabel">—</div><div class="cierre-encargado" id="cierreEncargado">—</div></div>
+        <button class="btn btn-ghost" style="margin-left:auto" onclick="cierreNavDate(0,true)">Último día</button>
+      </div>
+      <div id="cierreContenido"><div class="no-data-banner"><span style="font-size:32px">📅</span>Selecciona una fecha</div></div>
+    </div>
+
+    </main>
   </div>
 </div>
-</main>
- 
+
 <script>
-// ENLACE DE TU WEB APP DIRECTO EN EL CODIGO
-const API_URL = "https://script.google.com/macros/s/AKfycbyvTkenb3h8jDHfH29C8aF6Tf3e9Gr4fwNp-y0SYdFvijmFTF90HBX-SrjqjV3vFNSn/exec";
-
-let CIERRES = [];
-let GASTOS = [];
-let CHARTS = {};
-
-window.onload = function() {
-  document.getElementById('liveClock').textContent = new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  cargarDatos();
-};
-
-async function cargarDatos() {
-  showLoading(true);
-  try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    CIERRES = data.cierres || [];
-    GASTOS = data.gastos || [];
-    CIERRES.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-    procesarDashboard();
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Error de conexión. Asegúrate de haber implementado el script como 'Cualquiera'.");
-  } finally {
-    showLoading(false);
-  }
-}
-
-function showLoading(status) {
-  document.getElementById('loading-overlay').style.opacity = status ? "1" : "0";
-  document.getElementById('loading-overlay').style.pointerEvents = status ? "all" : "none";
-}
-
-function procesarDashboard() {
-  let totalVB = 0, totalProp = 0, totalIpo = 0, totalVN = 0, totalCli = 0, totalAlml = 0, totalAlmd = 0;
-  CIERRES.forEach(c => {
-    totalVB += Number(c.venta_bruta || 0);
-    totalProp += Number(c.propinas || 0);
-    totalIpo += Number(c.ipoconsumo || 0);
-    totalVN += Number(c.venta_neta || 0);
-    totalCli += Number(c.clientes || 0);
-    totalAlml += Number(c.alm_local || 0);
-    totalAlmd += Number(c.alm_dom || 0);
-  });
-
-  let totalG = 0, cocinaG = 0, nominaG = 0;
-  GASTOS.forEach(g => {
-    let v = Number(g.valor || 0); totalG += v;
-    let cat = (g.categoria || "").toLowerCase();
-    if(cat.includes("cocina") || cat.includes("insumo")) cocinaG += v;
-    if(cat.includes("nomina") || cat.includes("sueldo")) nominaG += v;
-  });
-
-  document.getElementById('kpi-vb').textContent = formatM(totalVB);
-  document.getElementById('sub-vb').textContent = `${CIERRES.length} días registrados`;
-  document.getElementById('kpi-vn').textContent = formatM(totalVN);
-  document.getElementById('kpi-prop').textContent = formatM(totalProp);
-  document.getElementById('sub-prop').textContent = totalVB ? `${((totalProp/totalVB)*100).toFixed(1)}% de la VB` : '0%';
-  document.getElementById('kpi-ipo').textContent = formatM(totalIpo);
-  document.getElementById('sub-ipo').textContent = totalVB ? `${((totalIpo/totalVB)*100).toFixed(1)}% de la VB` : '0%';
-  document.getElementById('kpi-cli').textContent = totalCli.toLocaleString();
-  document.getElementById('sub-cli').textContent = CIERRES.length ? `Prom: ${Math.round(totalCli/CIERRES.length)}/día` : '0';
-  
-  let ticketProm = totalCli ? Math.round(totalVN / totalCli) : 0;
-  document.getElementById('kpi-ticket').textContent = `$${ticketProm.toLocaleString()}`;
-  document.getElementById('kpi-alml').textContent = totalAlml;
-  document.getElementById('sub-almuerzos').textContent = `+ ${totalAlmd} dom. = ${totalAlml + totalAlmd} tot.`;
-  document.getElementById('kpi-gastos').textContent = formatM(totalG);
-  document.getElementById('sub-gastos').textContent = totalVN ? `${((totalG/totalVN)*100).toFixed(1)}% de la VN` : '0%';
-
-  document.getElementById('pct-cocina').textContent = totalVN ? `${((cocinaG / totalVN) * 100).toFixed(1)}%` : '0%';
-  document.getElementById('bar-cocina').style.width = totalVN ? `${Math.min((cocinaG / totalVN) * 100, 100)}%` : '0%';
-  document.getElementById('pct-nomina').textContent = totalVN ? `${((nominaG / totalVN) * 100).toFixed(1)}%` : '0%';
-  document.getElementById('bar-nomina').style.width = totalVN ? `${Math.min((nominaG / totalVN) * 100, 100)}%` : '0%';
-  document.getElementById('lbl-ticket-sf').textContent = `$${ticketProm.toLocaleString()}`;
-  document.getElementById('bar-ticket').style.width = `${Math.min((ticketProm / 85000) * 100, 100)}%`;
-
-  renderTablas();
-  generarGraficos(totalVN, totalProp, totalIpo);
-}
-
-function formatM(val) { return `$${(val / 1000000).toFixed(2)}M`; }
-
-function renderTablas() {
-  const tbody = document.getElementById('tablaHistorial');
-  tbody.innerHTML = '';
-  const ultimosCierres = [...CIERRES].reverse().slice(0, 15);
-  
-  ultimosCierres.forEach(c => {
-    let tprom = c.clientes ? Math.round(c.venta_neta / c.clientes) : 0;
-    let kpiStatus = tprom >= 85000 ? '🟢 Excelente' : tprom >= 60000 ? '🟡 Faltó Poco' : '🔴 Crítico';
-    tbody.innerHTML += `
-      <tr>
-        <td class="mono">${c.fecha}</td><td>${c.dia}</td><td>${c.encargado}</td>
-        <td style="text-align:right">$${Number(c.venta_bruta).toLocaleString()}</td>
-        <td style="text-align:right">$${Number(c.propinas).toLocaleString()}</td>
-        <td style="text-align:right">$${Number(c.ipoconsumo).toLocaleString()}</td>
-        <td style="text-align:right; font-weight:600; color:#4caf89">$${Number(c.venta_neta).toLocaleString()}</td>
-        <td style="text-align:right">${c.clientes}</td><td>${kpiStatus}</td>
-      </tr>
-    `;
-  });
-
-  const tbodyG = document.getElementById('tablaGastos');
-  tbodyG.innerHTML = '';
-  GASTOS.forEach(g => {
-    tbodyG.innerHTML += `
-      <tr>
-        <td class="mono">${g.fecha || '—'}</td><td>${g.categoria || 'Otros'}</td><td>${g.concepto || '—'}</td>
-        <td style="text-align:right; color:#e87878; font-weight:600">$${Number(g.valor || 0).toLocaleString()}</td>
-      </tr>
-    `;
-  });
-
-  const containerSf = document.getElementById('semaforoDiarioContainer');
-  containerSf.innerHTML = '';
-  CIERRES.slice(-8).forEach(c => {
-    let tprom = c.clientes ? Math.round(c.venta_neta / c.clientes) : 0;
-    let color = tprom >= 85000 ? 'green' : tprom >= 60000 ? 'yellow' : 'red';
-    containerSf.innerHTML += `
-      <div class="semaforo-item">
-        <div class="semaforo-dot ${color}"></div>
-        <div>
-          <div class="mono" style="font-size:12px">${c.fecha}</div>
-          <div style="font-size:11px; color:var(--muted)">Ticket: $${tprom.toLocaleString()}</div>
-        </div>
-      </div>
-    `;
-  });
-}
-
-function generarGraficos(vn, prop, ipo) {
-  Object.keys(CHARTS).forEach(k => { if(CHARTS[k]) CHARTS[k].destroy(); });
-  const fechas = CIERRES.map(c => c.fecha.substring(5));
-  
-  CHARTS.diario = new Chart(document.getElementById('chartDiario'), {
-    type: 'line',
-    data: { labels: fechas, datasets: [{ label: 'Venta Neta', data: CIERRES.map(c => c.venta_neta), borderColor: '#4caf89', tension: 0.2, fill: false }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-
-  CHARTS.donut = new Chart(document.getElementById('chartDonutVentas'), {
-    type: 'doughnut',
-    data: { labels: ['Venta Neta', 'Propinas', 'Ipoconsumo'], datasets: [{ data: [vn, prop, ipo], backgroundColor: ['#d4a84b', '#4caf89', '#e8613c'] }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-
-  CHARTS.clientes = new Chart(document.getElementById('chartClientes'), {
-    type: 'bar',
-    data: { labels: fechas, datasets: [{ label: 'Clientes', data: CIERRES.map(c => c.clientes), backgroundColor: '#5b9cf6' }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-
-  CHARTS.almuerzos = new Chart(document.getElementById('chartAlmuerzos'), {
-    type: 'line',
-    data: { labels: fechas, datasets: [{ label: 'Local', data: CIERRES.map(c => c.alm_local), borderColor: '#d4a84b' }, { label: 'Domicilio', data: CIERRES.map(c => c.alm_dom), borderColor: '#e8613c' }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-
-  let catMap = {}; GASTOS.forEach(g => { let c = g.categoria || 'Otros'; catMap[c] = (catMap[c] || 0) + Number(g.valor || 0); });
-  CHARTS.gastosBar = new Chart(document.getElementById('chartGastosBar'), {
-    type: 'bar',
-    data: { labels: Object.keys(catMap), datasets: [{ label: 'Gastos $', data: Object.values(catMap), backgroundColor: '#e8613c' }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-}
-
-function calcularCamposAutomaticos() {
-  const fInput = document.getElementById('inp-fecha').value;
-  if(fInput) {
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const d = new Date(fInput + 'T12:00:00');
-    document.getElementById('inp-dia').value = diasSemana[d.getDay()];
-  }
-  const vb = Math.abs(Number(document.getElementById('inp-vb').value) || 0);
-  const baseEstimada = vb / 1.08;
-  const ipo = Math.round(baseEstimada * 0.08);
-  document.getElementById('inp-ipo').value = `$${ipo.toLocaleString()}`;
-}
-
-async function enviarCierreAGoogleSheets() {
-  const fecha = document.getElementById('inp-fecha').value;
-  const encargado = document.getElementById('inp-encargado').value;
-  const dia = document.getElementById('inp-dia').value;
-  const venta_bruta = Number(document.getElementById('inp-vb').value) || 0;
-  const propinas = Number(document.getElementById('inp-prop').value) || 0;
-  const clientes = Number(document.getElementById('inp-cli').value) || 0;
-  const alm_local = Number(document.getElementById('inp-alml').value) || 0;
-  const alm_dom = Number(document.getElementById('inp-almd').value) || 0;
-
-  if(!fecha || !venta_bruta || !clientes) {
-    alert("❌ Por favor completa los campos obligatorios: Fecha, Venta Bruta y Número de Clientes.");
-    return;
-  }
-
-  const baseEstimada = venta_bruta / 1.08;
-  const ipoconsumo = Math.round(baseEstimada * 0.08);
-  const venta_neta = venta_bruta - propinas - ipoconsumo;
-
-  const dObj = new Date(fecha + 'T12:00:00');
-  const jan4 = new Date(dObj.getFullYear(), 0, 4);
-  const startOfWeek = new Date(jan4);
-  startOfWeek.setDate(jan4.getDate() - (jan4.getDay() || 7) + 1);
-  const semana = Math.ceil((dObj - startOfWeek) / 604800000) + 1;
-
-  const payload = { fecha, dia, encargado, venta_bruta, propinas, ipoconsumo, venta_neta, clientes, alm_local, alm_dom, semana };
-  const btn = document.getElementById('btn-registrar');
-  btn.disabled = true; btn.textContent = "Guardando en Google Sheets...";
-
-  try {
-    await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
-    alert("✅ ¡Cierre registrado en Google Sheets!");
-    ['inp-fecha','inp-vb','inp-prop','inp-ipo','inp-cli','inp-alml','inp-almd','inp-dia'].forEach(id => document.getElementById(id).value = '');
-    await cargarDatos();
-    switchView('resumen');
-  } catch (error) {
-    alert("Error de conexión al enviar el registro.");
-  } finally {
-    btn.disabled = false; btn.textContent = "Subir Cierre a Google Sheets →";
-  }
-}
-
-function switchView(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`view-${viewId}`).classList.add('active');
-  event.target.classList.add('active');
-}
-</script>
-</body>
-</html>
+const WEB_APP_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID_HERE/exec";
+const METAS = {venta_neta_diaria:2850163,venta_neta_mensual:86000000,venta_bruta_mensual:100900000,clientes_mensual:1261,ticket_promedio:80000,ejecutivos_mensual:1000,pct_cocina:0.30,pct_nomina:0.30,pct_servicios:0.20};
+let CIERRES=[],GASTOS=[],selectedMes=5,activeWeekVentas=-1,activeWeekGastos=-1,chartInstances={},historialFiltrado=[],currentView='resumen';
+const NOMBRES_MES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const TIPO_SHORT={'1 Insumos para Cocina':'1 Cocina','2 Insumo Bar licores Otros':'2 Bar/Licores','3 Compras TQ':'3 TQ','4 Insumos Personal':'4 Personal','5 Nomina y Turnos':'5 Nomina','6 Servicios Publicos y Arriendo':'6 Servicios','7 Gasto no programado':'7 No Prog.','8 Otros Gastos (Publicidad, Arreglos locativos, Cortesias, Gastos Varios)':'8 Otros'};
+const TIPO_COLOR={'1 Insumos para Cocina':'#e8613c','2 Insumo Bar licores Otros':'#2f7de1','3 Compras TQ':'#1faf6b','4 Insumos Personal':'#e0ac3f','5 Nomina y Turnos':'#7c5fd6','6 Servicios Publicos y Arriendo':'#e8941a','7 Gasto no programado':'#e0495f','8 Otros Gastos (Publicidad, Arreglos locativos, Cortesias, Gastos Varios)':'#8a93a6'};
+const TIPO_BADGE={'1 Insumos para Cocina':'badge-1','2 Insumo Bar licores Otros':'badge-2','3 Compras TQ':'badge-3','4 Insumos Personal':'badge-4','5 Nomina y Turnos':'badge-5','6 Servicios Publicos y Arriendo':'badge-6','7 Gasto no programado':'badge-7','8 Otros Gastos (Publicidad, Arreglos locativos, Cortesias, Gastos Varios)':'badge-8'};
+const TIPO_EMOJI={'1 Insumos para Cocina':'🍖','2 Insumo Bar licores Otros':'🍺','3 Compras TQ':'📦','4 Insumos Personal':'👔','5 Nomina y Turnos':'👷','6 Servicios Publicos y Arriendo':'💡','7 Gasto no programado':'⚠️','8 Otros Gastos (Publicidad, Arreglos locativos, Cortesias, Gastos Varios)':'📌'};
+const PAGO_COLORS={datafono:'#2f7de1',efectivo:'#c79330',qr:'#1faf6b',nequi:'#7c5fd6',daviplata:'#e8613c'};
+const fmt=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+(v/1e3).toFixed(0)+'K':'$'+Math.round(v).toLocate
+.side-brand-sub{font-size:9px;color:var(--side-muted);letter-spacing:3px;text-transform:uppercase;margin-top:4px}
